@@ -1,0 +1,7 @@
+export const MONEY = {
+  COMMISSION_PCT: 15, RIDER_COMM_PCT: 15,
+  BASE_DELIVERY_KOBO: 80000, PER_KM_KOBO: 25000,
+  FREE_DELIVERY_ABOVE_KOBO: 5000000,
+  NIGHT_START: 22, NIGHT_END: 6, NIGHT_SURGE_PCT: 25, NIGHT_BONUS_KOBO: 150000,
+};
+export const naira = (k: number) => `₦${((k ?? 0) / 100).toLocaleString("en-NG")}`;

@@ -1,0 +1,92 @@
+generator client { provider = "prisma-client-js" }
+datasource db { provider = "postgresql"; url = env("DATABASE_URL") }
+
+model OTP { phone String @id; code String; expiresAt DateTime }
+
+model User {
+  id String @id @default(cuid())
+  phone String @unique
+  name String
+  role Role @default(CUSTOMER)
+  bankCode String?
+  accountNumber String?
+  paystackRecipient String?
+  store Store?
+  rider Rider?
+}
+enum Role { CUSTOMER SELLER RIDER ADMIN }
+
+model Store {
+  id String @id @default(cuid())
+  sellerId String @unique
+  seller User @relation(fields: [sellerId], references: [id])
+  name String
+  kind StoreKind @default(FOOD)
+  address String
+  lat Float
+  lng Float
+  openHour Int @default(8)
+  closeHour Int @default(23)
+  isOpen24h Boolean @default(false)
+  items Item[]
+}
+enum StoreKind { FOOD GROCERY RETAIL }
+
+model Item {
+  id String @id @default(cuid())
+  storeId String
+  store Store @relation(fields: [storeId], references: [id])
+  name String
+  priceKobo Int
+  imageUrl String?
+}
+
+model Rider {
+  id String @id @default(cuid())
+  userId String @unique
+  user User @relation(fields: [userId], references: [id])
+  vehicle String @default("bike")
+  isOnline Boolean @default(false)
+  isNightVerified Boolean @default(false)
+  lat Float?
+  lng Float?
+  walletKobo Int @default(0)
+  nightTrips Int @default(0)
+}
+
+enum OrderKind { FOOD GROCERY PARCEL ECOMMERCE }
+enum OrderStatus { PENDING PAYMENT_FAILED PAID PREPARING READY_FOR_PICKUP ASSIGNED PICKED_UP DELIVERED CANCELLED }
+
+model Order {
+  id String @id @default(cuid())
+  kind OrderKind
+  customerId String
+  storeId String?
+  riderId String?
+  status OrderStatus @default(PENDING)
+  items Json?
+  subtotalKobo Int @default(0)
+  deliveryFeeKobo Int @default(0)
+  commissionKobo Int @default(0)
+  riderPayoutKobo Int @default(0)
+  nightBonusKobo Int @default(0)
+  totalKobo Int
+  pickupAddress String?
+  dropoffAddress String
+  dropoffLat Float
+  dropoffLng Float
+  paystackRef String? @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model LedgerEntry {
+  id String @id @default(cuid())
+  orderId String
+  party String
+  amountKobo Int
+  note String
+  createdAt DateTime @default(now())
+}
+
+model PlatformConfig { key String @id; value Int }
