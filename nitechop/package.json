@@ -2,7 +2,7 @@
   "name": "nitechop", "private": true,
   "scripts": {
     "dev": "next dev", "build": "next build", "start": "next start",
-    "socket": "tsx src/server.ts",
+    "socket": "tsx src/server.ts","postinstall": "prisma generate",
     "db:push": "prisma db push", "db:seed": "tsx prisma/seed.ts"
   },
   "dependencies": {
