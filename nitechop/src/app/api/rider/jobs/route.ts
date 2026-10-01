@@ -6,5 +6,5 @@ export async function GET(req: Request) {
   const lat = Number(searchParams.get("lat")), lng = Number(searchParams.get("lng"));
   const jobs = await prisma.order.findMany({ where: { status: "PREPARING" }, include: { store: true }, take: 20 });
   return NextResponse.json(jobs.map((j: any) => ({ ...j, km: j.store ? haversineKm({ lat, lng }, j.store) : 0 }))
-    .sort((a: any, b: any) => a.km - b.km));
+    .sort((a, b) => a.km - b.km));
 }
